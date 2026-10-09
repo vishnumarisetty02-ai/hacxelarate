@@ -1,0 +1,73 @@
+# Web Framework
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+python-multipart==0.0.12
+
+# Database
+sqlalchemy==2.0.36
+alembic==1.14.0
+asyncpg==0.30.0
+psycopg2-binary==2.9.10
+
+# Cache / Queue
+redis==5.2.0
+celery==5.4.0
+
+# AI / ML
+langchain==0.3.7
+langchain-openai==0.2.8
+langchain-community==0.3.7
+langgraph==0.2.55
+litellm==1.52.0
+openai==1.54.4
+tiktoken==0.8.0
+
+# Embeddings / Vector
+pgvector==0.3.5
+
+# OCR / Document Processing
+pypdf==5.1.0
+pdf2image==1.17.0
+pytesseract==0.3.13
+Pillow==11.0.0
+python-docx==1.1.2
+
+# NLP / Entity Extraction
+spacy==3.8.2
+
+# FHIR
+fhir.resources==8.0.0b1
+
+# Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+cryptography==43.0.3
+
+# Configuration
+pydantic==2.10.0
+pydantic-settings==2.6.1
+python-dotenv==1.0.1
+
+# HTTP
+httpx==0.28.0
+
+# Observability
+opentelemetry-api==1.28.0
+opentelemetry-sdk==1.28.0
+opentelemetry-instrumentation-fastapi==0.49b0
+opentelemetry-instrumentation-sqlalchemy==0.49b0
+prometheus-client==0.21.0
+structlog==24.4.0
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.24.0
+pytest-cov==6.0.0
+httpx==0.28.0
+factory-boy==3.3.1
+faker==33.1.0
+
+# Utilities
+python-slugify==8.0.4
+email-validator==2.2.0
+aiofiles==24.1.0

@@ -1,0 +1,424 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #f4f7fb;
+    color: #1e293b;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+}
+
+/* ==========================================================================
+   1. CYBERSECURITY SOC AMBIENT BACKGROUND SYSTEM (SLOW & SUBTLE)
+   ========================================================================== */
+
+/* Very subtle enterprise network mesh grid (0.04 opacity, crisp & clean) */
+.cyber-soc-bg {
+  position: relative;
+  background-color: #f4f7fb;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.04) 1.5px, transparent 1.5px),
+    linear-gradient(to right, rgba(226, 232, 240, 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(226, 232, 240, 0.4) 1px, transparent 1px);
+  background-size: 32px 32px, 64px 64px, 64px 64px;
+}
+
+/* Slow, ambient floating glow nodes in the background (25s infinite loop) */
+.cyber-ambient-node-1 {
+  position: fixed;
+  top: 10%;
+  left: 15%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, rgba(244, 247, 251, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: slowFloat1 24s ease-in-out infinite alternate;
+}
+
+.cyber-ambient-node-2 {
+  position: fixed;
+  bottom: 12%;
+  right: 10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.05) 0%, rgba(244, 247, 251, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: slowFloat2 28s ease-in-out infinite alternate;
+}
+
+.cyber-ambient-node-3 {
+  position: fixed;
+  top: 45%;
+  left: 48%;
+  width: 600px;
+  height: 600px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.035) 0%, rgba(244, 247, 251, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: slowFloat1 30s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes slowFloat1 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -25px) scale(1.08); }
+  100% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+@keyframes slowFloat2 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-35px, 25px) scale(1.06); }
+  100% { transform: translate(25px, -20px) scale(0.96); }
+}
+
+
+/* ==========================================================================
+   2. CLAYMORPHISM ELEVATION & CARDS
+   ========================================================================== */
+
+.clay-card {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 6px 6px 18px rgba(185, 200, 222, 0.35), -6px -6px 18px rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(240, 245, 255, 0.9);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s ease;
+}
+
+/* Card Hover Elevation (4px lift with subtle glow) */
+.clay-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 8px 12px 24px rgba(180, 195, 220, 0.45), -6px -6px 18px rgba(255, 255, 255, 1);
+  border-color: rgba(191, 219, 254, 0.8);
+}
+
+.clay-card-hover-danger:hover {
+  transform: translateY(-4px);
+  box-shadow: 8px 12px 24px rgba(244, 63, 94, 0.15), -6px -6px 18px rgba(255, 255, 255, 1);
+  border-color: rgba(254, 205, 211, 0.9);
+}
+
+.clay-card-hover-warning:hover {
+  transform: translateY(-4px);
+  box-shadow: 8px 12px 24px rgba(245, 158, 11, 0.15), -6px -6px 18px rgba(255, 255, 255, 1);
+  border-color: rgba(254, 240, 138, 0.9);
+}
+
+/* Specific Threat Card Glows (Subtle, Enterprise Cyber Aesthetic) */
+.threat-card-glow-blue {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s ease;
+}
+.threat-card-glow-blue:hover {
+  transform: translateY(-4px);
+  box-shadow: 8px 12px 24px rgba(37, 99, 235, 0.12), -6px -6px 18px rgba(255, 255, 255, 1);
+  border-color: rgba(191, 219, 254, 0.9);
+}
+
+.threat-card-glow-danger {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s ease;
+}
+.threat-card-glow-danger:hover {
+  transform: translateY(-4px);
+  box-shadow: 8px 12px 24px rgba(244, 63, 94, 0.14), -6px -6px 18px rgba(255, 255, 255, 1);
+  border-color: rgba(254, 205, 211, 0.9);
+}
+
+.threat-card-glow-warning {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s ease;
+}
+.threat-card-glow-warning:hover {
+  transform: translateY(-4px);
+  box-shadow: 8px 12px 24px rgba(245, 158, 11, 0.14), -6px -6px 18px rgba(255, 255, 255, 1);
+  border-color: rgba(254, 240, 138, 0.9);
+}
+
+.clay-card-inset {
+  background: #f8fafc;
+  border-radius: 14px;
+  box-shadow: inset 3px 3px 6px rgba(190, 205, 225, 0.3), inset -3px -3px 6px rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(226, 232, 240, 0.7);
+}
+
+/* ==========================================================================
+   3. BUTTON MICRO-INTERACTIONS (SMOOTH ELEVATION & SCALE)
+   ========================================================================== */
+
+.clay-button {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 3px 3px 8px rgba(190, 205, 225, 0.4), -3px -3px 8px rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(240, 245, 255, 0.9);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.clay-button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 5px 6px 14px rgba(180, 198, 222, 0.5), -4px -4px 10px rgba(255, 255, 255, 1);
+  border-color: rgba(191, 219, 254, 0.8);
+}
+
+.clay-button:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: inset 2px 2px 5px rgba(180, 198, 222, 0.35), inset -2px -2px 5px rgba(255, 255, 255, 0.95);
+}
+
+.clay-button-primary {
+  background: #2563eb;
+  color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 3px 4px 12px rgba(37, 99, 235, 0.35), -2px -2px 6px rgba(255, 255, 255, 0.7);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.clay-button-primary:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 5px 8px 18px rgba(37, 99, 235, 0.45);
+}
+
+.clay-button-primary:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: inset 2px 2px 5px rgba(29, 78, 216, 0.4);
+}
+
+.clay-badge {
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.05), inset -1px -1px 3px rgba(255, 255, 255, 0.85);
+  border-radius: 9999px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Tag Pills (Monitoring Keywords) */
+.tag-pill {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.tag-pill:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 3px 4px 10px rgba(180, 195, 220, 0.35);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+/* ==========================================================================
+   4. TIMING & SEQUENTIAL STAGGER SYSTEM
+   ========================================================================== */
+
+/* Page Level Entrance (0.5s - 0.7s) */
+@keyframes pageEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-entrance {
+  animation: pageEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Text Element Stagger Animation */
+@keyframes textFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.anim-heading {
+  opacity: 0;
+  animation: textFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards;
+}
+
+.anim-subtitle {
+  opacity: 0;
+  animation: textFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.18s forwards;
+}
+
+.anim-actions {
+  opacity: 0;
+  animation: textFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.28s forwards;
+}
+
+.anim-content {
+  opacity: 0;
+  animation: textFadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.38s forwards;
+}
+
+/* Directional Sliding Cards Entry */
+@keyframes cardSlideLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes cardSlideBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardSlideRight {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.card-slide-left {
+  opacity: 0;
+  animation: cardSlideLeft 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.card-slide-bottom {
+  opacity: 0;
+  animation: cardSlideBottom 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.card-slide-right {
+  opacity: 0;
+  animation: cardSlideRight 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Stagger Delays */
+.delay-1 { animation-delay: 0.10s; }
+.delay-2 { animation-delay: 0.20s; }
+.delay-3 { animation-delay: 0.30s; }
+.delay-4 { animation-delay: 0.40s; }
+.delay-5 { animation-delay: 0.50s; }
+.delay-6 { animation-delay: 0.60s; }
+
+/* Pulse ONLY on the status dot */
+@keyframes pulseDot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.9);
+  }
+}
+
+.pulse-dot {
+  animation: pulseDot 2.0s ease-in-out infinite;
+}
+
+/* Notification Dot Subtle Pulse */
+@keyframes notifPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0.85;
+  }
+}
+
+.notif-pulse {
+  animation: notifPulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Sidebar Item Sequential Load */
+@keyframes sidebarItemSlide {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.sidebar-item-anim {
+  opacity: 0;
+  animation: sidebarItemSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Modal Drawer Animation */
+@keyframes modalSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-modal-up {
+  animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Clean Custom Minimalist Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* React Flow Style Overrides */
+.react-flow__attribution {
+  display: none !important;
+}
+.react-flow__node {
+  border-radius: 18px;
+}
+
+/* ==========================================================================
+   5. ACCESSIBILITY / PREFERS-REDUCED-MOTION
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .cyber-ambient-node-1,
+  .cyber-ambient-node-2 {
+    display: none !important;
+  }
+}
