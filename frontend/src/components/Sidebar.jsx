@@ -11,7 +11,8 @@ import {
   LogOut,
   ShieldAlert,
   Sliders,
-  Sparkles
+  Sparkles,
+  Cpu
 } from 'lucide-react';
 
 export default function Sidebar({ isMobileOpen, onCloseMobile }) {
@@ -53,6 +54,12 @@ export default function Sidebar({ isMobileOpen, onCloseMobile }) {
       label: 'Attack Campaigns',
       icon: GitBranch,
       badge: 'Active'
+    },
+    {
+      to: '/intelligence',
+      label: 'Threat Intel Hub',
+      icon: Cpu,
+      badge: 'NEW'
     },
     {
       to: '/reports',

@@ -52,6 +52,19 @@ export default function SocialMonitoring() {
     url: 'https://apexpay-support-recovery.top/verify'
   });
 
+  // ADVANCED FEATURE: Executive & VIP Impersonation Form
+  const [vipForm, setVipForm] = useState({
+    username: '@ApexCEO_SarahJenkins',
+    display_name: 'Sarah Jenkins - CEO ApexPay',
+    executive_name: 'Sarah Jenkins',
+    executive_role: 'Chief Executive Officer (CEO)',
+    bio: 'Official VIP Escrow & Token Distribution Channel. Message for executive recovery assistance.',
+    followers: 24,
+    following: 480,
+    verified: false,
+    external_url: 'https://apexpay-vip-desk.xyz'
+  });
+
   const loadData = async () => {
     setLoading(true);
     setErrorMsg(null);
@@ -122,6 +135,26 @@ export default function SocialMonitoring() {
       setTimeout(() => setTakedownMsg(null), 5000);
     } catch (err) {
       setErrorMsg(err.message || 'Content analysis failed.');
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  // 3. Run Executive & VIP Impersonation Radar
+  const handleRunVipAnalysis = async (e) => {
+    e.preventDefault();
+    setAnalyzing(true);
+    setAnalysisResult(null);
+    setErrorMsg(null);
+
+    try {
+      const res = await threatService.analyzeVipProfile(vipForm);
+      setAnalysisResult(res.data);
+      setThreats((prev) => [res.data, ...prev]);
+      setTakedownMsg(`Executive Protection Alert: ${res.data.name} assessed with Critical Score ${res.data.risk_score || res.data.riskScore}/100.`);
+      setTimeout(() => setTakedownMsg(null), 5000);
+    } catch (err) {
+      setErrorMsg(err.message || 'VIP profile analysis failed.');
     } finally {
       setAnalyzing(false);
     }
@@ -311,7 +344,15 @@ export default function SocialMonitoring() {
                   activeTab === 'profile' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600'
                 }`}
               >
-                Social Profile Model
+                Brand Profile Model
+              </button>
+              <button
+                onClick={() => setActiveTab('vip')}
+                className={`flex-1 py-1.5 rounded-lg transition-all ${
+                  activeTab === 'vip' ? 'bg-white text-purple-600 shadow-sm' : 'text-slate-600'
+                }`}
+              >
+                Executive & VIP Radar
               </button>
               <button
                 onClick={() => setActiveTab('content')}
@@ -319,7 +360,7 @@ export default function SocialMonitoring() {
                   activeTab === 'content' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600'
                 }`}
               >
-                Scam NLP TF-IDF Model
+                Scam NLP Model
               </button>
             </div>
 
@@ -392,6 +433,135 @@ export default function SocialMonitoring() {
                   >
                     {analyzing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                     <span>Run AI Classification</span>
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* ADVANCED FEATURE: Executive & VIP Impersonation Form */}
+            {activeTab === 'vip' && (
+              <form onSubmit={handleRunVipAnalysis} className="space-y-3 text-xs">
+                {/* Presets */}
+                <div className="flex items-center gap-1.5 p-2 rounded-xl bg-purple-50/70 border border-purple-100">
+                  <span className="text-[11px] font-bold text-purple-900 mr-1">Executive Presets:</span>
+                  <button
+                    type="button"
+                    onClick={() => setVipForm({
+                      username: '@ApexCEO_SarahJenkins',
+                      display_name: 'Sarah Jenkins - CEO ApexPay',
+                      executive_name: 'Sarah Jenkins',
+                      executive_role: 'Chief Executive Officer (CEO)',
+                      bio: 'Official VIP Escrow & Token Distribution Channel. Message for executive recovery assistance.',
+                      followers: 24,
+                      following: 480,
+                      verified: false,
+                      external_url: 'https://apexpay-vip-desk.xyz'
+                    })}
+                    className="px-2 py-1 rounded bg-white text-purple-700 font-semibold border border-purple-200 text-[10px] hover:bg-purple-100"
+                  >
+                    CEO (Sarah Jenkins)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setVipForm({
+                      username: '@DavidVance_ApexCFO',
+                      display_name: 'David Vance - CFO ApexPay',
+                      executive_name: 'David Vance',
+                      executive_role: 'Chief Financial Officer (CFO)',
+                      bio: 'Corporate treasury inquiries and investor settlement allocations. Private wire portal.',
+                      followers: 12,
+                      following: 310,
+                      verified: false,
+                      external_url: 'https://apex-treasury-auth.com'
+                    })}
+                    className="px-2 py-1 rounded bg-white text-purple-700 font-semibold border border-purple-200 text-[10px] hover:bg-purple-100"
+                  >
+                    CFO (David Vance)
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Targeted Executive Name</label>
+                    <input
+                      type="text"
+                      value={vipForm.executive_name}
+                      onChange={(e) => setVipForm({ ...vipForm, executive_name: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 shadow-inner focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Executive Role / Title</label>
+                    <input
+                      type="text"
+                      value={vipForm.executive_role}
+                      onChange={(e) => setVipForm({ ...vipForm, executive_role: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 shadow-inner focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Impersonating Handle</label>
+                    <input
+                      type="text"
+                      value={vipForm.username}
+                      onChange={(e) => setVipForm({ ...vipForm, username: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-mono shadow-inner focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Spoofed Display Name</label>
+                    <input
+                      type="text"
+                      value={vipForm.display_name}
+                      onChange={(e) => setVipForm({ ...vipForm, display_name: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 shadow-inner focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Executive Bio / Lure Text</label>
+                  <textarea
+                    rows={2}
+                    value={vipForm.bio}
+                    onChange={(e) => setVipForm({ ...vipForm, bio: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 shadow-inner focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Embedded Lure Link (Optional)</label>
+                  <input
+                    type="text"
+                    value={vipForm.external_url || ''}
+                    onChange={(e) => setVipForm({ ...vipForm, external_url: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 shadow-inner focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono"
+                  />
+                </div>
+
+                <div className="pt-2 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="clay-button px-4 py-2 font-bold text-slate-600 hover:text-slate-900"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={analyzing}
+                    className="clay-button-primary px-5 py-2 font-bold flex items-center gap-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
+                  >
+                    {analyzing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldAlert className="w-4 h-4" />}
+                    <span>Evaluate VIP Whaling Threat</span>
                   </button>
                 </div>
               </form>

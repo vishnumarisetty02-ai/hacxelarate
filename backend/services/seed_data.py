@@ -22,6 +22,7 @@ def force_seed_demo_data(db: Session):
     db.query(ThreatModel).delete()
     db.query(CampaignModel).delete()
     db.query(ReportModel).delete()
+    db.query(BrandModel).delete()
     db.commit()
 
     print("[AegisGuard] Seeding initial database records...")

@@ -28,12 +28,17 @@ def analyze_url(
 
     threat_id = f"THR-{int(time.time() * 1000) % 9000 + 1000}"
 
+    homo = RiskEngine.detect_homoglyphs(payload.url)
     evidence = {
         "targetUrl": payload.url,
         "analyzedAt": time.strftime("%Y-%m-%d %H:%M:%S UTC"),
-        "sslStatus": "Self-signed / Untrusted CA",
+        "sslStatus": "Self-signed / Untrusted CA" if analysis["risk_score"] >= 60 else "Valid TLS (Let's Encrypt)",
         "ipAddress": "198.51.100.89",
-        "dnsStatus": "Active A Record"
+        "dnsStatus": "Active A Record",
+        "shannonEntropy": homo["entropy"],
+        "isHomoglyph": homo["is_homoglyph"],
+        "mitreAttack": ["T1566.002 - Spearphishing Link", "T1583.001 - Acquire Domains"],
+        "abuseContact": "abuse@registrar-servers.com"
     }
 
     # Correlate threat with active attack campaigns
@@ -74,3 +79,27 @@ def analyze_url(
     db.refresh(threat_record)
 
     return threat_record.to_dict()
+
+@router.post("/permutations")
+def generate_permutations(
+    payload: dict = None,
+    db: Session = Depends(get_db)
+):
+    """
+    Generates multi-vector typosquatting, combosquatting, and IDN homoglyph
+    permutations for the given brand or domain.
+    """
+    data = payload or {}
+    brand_or_domain = data.get("domain") or data.get("brand_name")
+    if not brand_or_domain:
+        primary_brand = db.query(BrandModel).first()
+        brand_or_domain = primary_brand.official_website if primary_brand else "apexpay.com"
+
+    permutations = RiskEngine.generate_domain_permutations(brand_or_domain)
+    return {
+        "target": brand_or_domain,
+        "total_scanned": len(permutations),
+        "high_risk_count": sum(1 for p in permutations if p["risk_score"] >= 70),
+        "permutations": permutations
+    }
+

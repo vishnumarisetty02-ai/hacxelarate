@@ -3,7 +3,8 @@ import urllib.parse
 import json
 import sys
 
-BASE_URL = "http://127.0.0.1:8000"
+import os
+BASE_URL = os.environ.get("TEST_API_URL", "http://127.0.0.1:8001")
 
 def request(method, path, data=None, headers=None):
     url = f"{BASE_URL}{path}"

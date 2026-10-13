@@ -120,3 +120,31 @@ def submit_threat_feedback(
         "reason": reason,
         "message": f"Threat {threat_id} updated to '{threat.status}'. Feedback recorded for ML model calibration."
     }
+
+@router.get("/{threat_id}/dossier")
+def get_threat_dossier(
+    threat_id: str,
+    notes: Optional[str] = Query(None, description="Analyst escalation notes"),
+    db: Session = Depends(get_db)
+):
+    """
+    Generates a RFC 2142 abuse report and formal DMCA legal complaint packet
+    with cryptographic evidence hashes and registrar routing.
+    """
+    from models.entities import BrandModel
+    from services.risk_engine import RiskEngine
+
+    threat = db.query(ThreatModel).filter(ThreatModel.id == threat_id).first()
+    if not threat:
+        raise HTTPException(status_code=404, detail=f"Threat '{threat_id}' not found.")
+
+    primary_brand = db.query(BrandModel).first()
+    brand_dict = primary_brand.to_dict() if primary_brand else None
+
+    dossier = RiskEngine.generate_takedown_dossier(
+        threat_data=threat.to_dict(),
+        brand_data=brand_dict,
+        analyst_notes=notes or ""
+    )
+    return dossier
+

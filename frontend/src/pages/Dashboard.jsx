@@ -12,7 +12,8 @@ import {
   Sparkles,
   ShieldCheck,
   ChevronRight,
-  TrendingUp
+  TrendingUp,
+  Zap
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -38,6 +39,21 @@ export default function Dashboard() {
   const [threats, setThreats] = useState([]);
   const [takedownSuccessMsg, setTakedownSuccessMsg] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [sweeping, setSweeping] = useState(false);
+
+  const handleAutonomousSweep = async () => {
+    setSweeping(true);
+    try {
+      const res = await threatService.runAutonomousSweep('ApexPay Global');
+      setTakedownSuccessMsg(`Autonomous Multi-Vector Sweep Complete: ${res.data?.vectors_scanned?.length || 3} vectors audited, Executive Risk Index: ${res.data?.executive_risk_index || 88}/100.`);
+      await loadDashboardData();
+      setTimeout(() => setTakedownSuccessMsg(null), 6000);
+    } catch (err) {
+      setErrorMsg(err.message || 'Autonomous sweep failed.');
+    } finally {
+      setSweeping(false);
+    }
+  };
 
   const loadDashboardData = async () => {
     setLoading(true);
@@ -156,6 +172,14 @@ export default function Dashboard() {
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap anim-actions">
+          <button
+            onClick={handleAutonomousSweep}
+            disabled={sweeping}
+            className="clay-button-primary px-4 py-2 text-xs font-bold flex items-center gap-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-md hover:shadow-lg transition-all"
+          >
+            {sweeping ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5 text-amber-300" />}
+            <span>Autonomous Brand Sweep</span>
+          </button>
           <button
             onClick={handleSeedDemo}
             className="clay-button px-3.5 py-2 text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1.5"

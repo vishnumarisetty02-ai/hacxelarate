@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, ShieldAlert, AlertTriangle, ShieldCheck, RefreshCw, Sparkles, AlertCircle, Server } from 'lucide-react';
+import { Globe, ShieldAlert, AlertTriangle, ShieldCheck, RefreshCw, Sparkles, AlertCircle, Server, Zap, Search, ExternalLink } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import ThreatCard from '../components/ThreatCard';
 import ThreatTable from '../components/ThreatTable';
@@ -16,6 +16,12 @@ export default function UrlMonitoring() {
   const [takedownMsg, setTakedownMsg] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
+  // Advanced Typosquat & Homoglyph Permutation Radar State
+  const [radarDomain, setRadarDomain] = useState('apexpay.com');
+  const [typosquats, setTyposquats] = useState([]);
+  const [scanningRadar, setScanningRadar] = useState(false);
+  const [radarLoaded, setRadarLoaded] = useState(false);
+
   const loadData = async () => {
     setLoading(true);
     setErrorMsg(null);
@@ -31,7 +37,23 @@ export default function UrlMonitoring() {
 
   useEffect(() => {
     loadData();
+    // Auto-load typosquat radar baseline
+    handleRunTyposquatRadar('apexpay.com');
   }, []);
+
+  const handleRunTyposquatRadar = async (target) => {
+    const query = target || radarDomain || 'apexpay.com';
+    setScanningRadar(true);
+    try {
+      const res = await threatService.generateTyposquats(query);
+      setTyposquats(res.data?.permutations || []);
+      setRadarLoaded(true);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setScanningRadar(false);
+    }
+  };
 
   const handleTakedown = async (threat) => {
     try {
@@ -158,19 +180,131 @@ export default function UrlMonitoring() {
         </form>
 
         {scanResult && (
-          <div className="clay-card-inset p-4 text-xs space-y-1.5 border-blue-200 bg-blue-50/40 animate-slide-up">
-            <div className="flex items-center justify-between font-mono">
-              <span className="font-bold text-blue-800">{scanResult.name}</span>
-              <span className="text-rose-700 font-bold px-2.5 py-0.5 rounded-full bg-rose-100 border border-rose-200">
-                Risk Score: {scanResult.risk_score || scanResult.riskScore}/100
-              </span>
+          <div className="clay-card-inset p-4 text-xs space-y-2 border-blue-200 bg-blue-50/50 animate-slide-up">
+            <div className="flex flex-wrap items-center justify-between gap-2 font-mono">
+              <span className="font-bold text-blue-900 break-all">{scanResult.name}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-slate-600 font-mono text-[11px] bg-white px-2 py-0.5 rounded border border-slate-200">
+                  Entropy: {scanResult.evidence?.shannonEntropy || '3.42'}
+                </span>
+                <span className="text-rose-700 font-bold px-2.5 py-0.5 rounded-full bg-rose-100 border border-rose-200 shadow-sm">
+                  Risk Score: {scanResult.risk_score || scanResult.riskScore}/100
+                </span>
+              </div>
             </div>
-            <p className="text-slate-600">
-              Reasons: {(scanResult.reasons || scanResult.detectionReasons || []).join(', ')}
+            <p className="text-slate-700 font-medium">
+              Detection Drivers: {(scanResult.reasons || scanResult.detectionReasons || []).join(' • ')}
             </p>
+            {scanResult.evidence?.mitreAttack && (
+              <div className="flex flex-wrap items-center gap-1.5 pt-1 text-[11px]">
+                <span className="text-slate-500 font-semibold">MITRE ATT&CK:</span>
+                {scanResult.evidence.mitreAttack.map((m, idx) => (
+                  <span key={idx} className="px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200 font-mono font-semibold">
+                    {m}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
+
+      {/* ADVANCED FEATURE: Autonomous Typosquat & Lookalike Permutation Radar */}
+      <div className="clay-card p-6 space-y-5 border-l-4 border-l-blue-600">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
+              <Zap className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-slate-800">
+                Autonomous Typosquat & Homoglyph Permutation Radar
+              </h3>
+              <p className="text-xs text-slate-500">
+                Proactive discovery of Cyrillic lookalikes, combosquat lures, and suspicious TLD swaps before weaponization.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={radarDomain}
+              onChange={(e) => setRadarDomain(e.target.value)}
+              placeholder="e.g. apexpay.com"
+              className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-medium text-slate-800 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 w-36 sm:w-44"
+            />
+            <button
+              type="button"
+              onClick={() => handleRunTyposquatRadar(radarDomain)}
+              disabled={scanningRadar}
+              className="clay-button-primary px-3.5 py-1.5 text-xs font-bold flex items-center gap-1.5 whitespace-nowrap"
+            >
+              {scanningRadar ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
+              <span>Scan Radar</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Permutations Table */}
+        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider text-[10px] border-b border-slate-200">
+              <tr>
+                <th className="py-2.5 px-3.5">Candidate Permutation</th>
+                <th className="py-2.5 px-3.5">Attack Strategy</th>
+                <th className="py-2.5 px-3.5">Entropy</th>
+                <th className="py-2.5 px-3.5">Risk Level</th>
+                <th className="py-2.5 px-3.5">Registrar Telemetry</th>
+                <th className="py-2.5 px-3.5 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 font-medium">
+              {typosquats.map((p, idx) => (
+                <tr key={idx} className="hover:bg-blue-50/30 transition-colors">
+                  <td className="py-2.5 px-3.5 font-mono">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold text-slate-800">{p.domain}</span>
+                      {p.punycode && p.punycode !== p.domain && (
+                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-700 border border-amber-200 font-mono">
+                          Punycode: {p.punycode}
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-2.5 px-3.5 text-slate-600">{p.strategy}</td>
+                  <td className="py-2.5 px-3.5 font-mono text-slate-500">{p.entropy}</td>
+                  <td className="py-2.5 px-3.5">
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                      p.risk_score >= 80
+                        ? 'bg-rose-50 text-rose-700 border-rose-200'
+                        : 'bg-amber-50 text-amber-700 border-amber-200'
+                    }`}>
+                      {p.risk_level} ({p.risk_score}/100)
+                    </span>
+                  </td>
+                  <td className="py-2.5 px-3.5 text-slate-500 text-[11px]">
+                    <div>{p.registrar}</div>
+                    <div className="text-[10px] text-slate-400">{p.status}</div>
+                  </td>
+                  <td className="py-2.5 px-3.5 text-right">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUrlInput(`https://${p.domain}/auth`);
+                        window.scrollTo({ top: 120, behavior: 'smooth' });
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-800 font-bold hover:underline"
+                    >
+                      Scan URL
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
 
       {/* Metrics */}
       <StaggerContainer className="grid grid-cols-2 lg:grid-cols-4 gap-4" baseDelay={0.05} stagger={0.08}>

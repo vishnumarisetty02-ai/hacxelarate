@@ -1,11 +1,18 @@
 import os
+import sys
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
+
+# Ensure backend directory is in sys.path
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
+load_dotenv()
+
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-
-load_dotenv()
 
 # Database & Seed
 from models.database import engine, Base, SessionLocal
@@ -20,6 +27,8 @@ from api.routes_threats import router as threats_router
 from api.routes_campaigns import router as campaigns_router
 from api.routes_dashboard import router as dashboard_router
 from api.routes_reports import router as reports_router
+from api.routes_intelligence import router as intelligence_router
+from api.routes_phishing import router as phishing_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -111,6 +120,8 @@ app.include_router(threats_router, prefix="/api")
 app.include_router(campaigns_router, prefix="/api")
 app.include_router(dashboard_router, prefix="/api")
 app.include_router(reports_router, prefix="/api")
+app.include_router(intelligence_router, prefix="/api")
+app.include_router(phishing_router, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn

@@ -116,3 +116,78 @@ def analyze_scam_content(
         "reasons": result["reasons"],
         "recommendations": result["recommendations"]
     }
+
+@router.post("/vip-radar")
+def analyze_vip_profile(
+    payload: dict,
+    db: Session = Depends(get_db)
+):
+    """
+    Evaluates executive & C-Suite VIP impersonation profiles
+    (e.g. CEO, CFO, Founder, Head of Security) with targeted lure scoring.
+    """
+    primary_brand = db.query(BrandModel).first()
+    brand_dict = primary_brand.to_dict() if primary_brand else None
+
+    username = payload.get("username", "@ApexCEO_Official")
+    display_name = payload.get("display_name", "Sarah Jenkins - CEO ApexPay")
+    executive_name = payload.get("executive_name", "Sarah Jenkins")
+    executive_role = payload.get("executive_role", "Chief Executive Officer (CEO)")
+    bio = payload.get("bio", "Official executive account for ApexPay. Urgent crypto allocation inquiry: DM for wallet recovery assistance.")
+    followers = int(payload.get("followers", 42))
+    following = int(payload.get("following", 512))
+    verified = bool(payload.get("verified", False))
+    external_url = payload.get("external_url")
+
+    eval_result = RiskEngine.analyze_executive_profile(
+        username=username,
+        display_name=display_name,
+        executive_name=executive_name,
+        executive_role=executive_role,
+        bio=bio,
+        followers=followers,
+        following=following,
+        verified=verified,
+        external_url=external_url,
+        brand_data=brand_dict
+    )
+
+    threat_id = f"THR-VIP-{int(time.time() * 1000) % 9000 + 1000}"
+    evidence = {
+        "username": username,
+        "displayName": display_name,
+        "targetedExecutive": executive_name,
+        "executiveRole": executive_role,
+        "followers": followers,
+        "following": following,
+        "verified": verified,
+        "externalUrl": external_url,
+        "mitreAttack": eval_result["mitre_attack"],
+        "riskVector": "Executive Identity Theft / C-Suite Whaling Lure"
+    }
+
+    threat_record = ThreatModel(
+        id=threat_id,
+        threat_type="social",
+        entity=username,
+        name=f"VIP Impersonation: {display_name}",
+        category="Executive / VIP Whaling Impersonation",
+        platform="Social Media (Executive Impersonation)",
+        risk_score=eval_result["risk_score"],
+        risk_level=eval_result["risk_level"],
+        confidence=eval_result["confidence"],
+        reasons=json.dumps(eval_result["reasons"]),
+        recommendations=json.dumps(eval_result["recommendations"]),
+        related_threats=json.dumps([]),
+        evidence=json.dumps(evidence),
+        status="Active" if eval_result["risk_score"] >= 60 else "Investigating",
+        campaign_id=None
+    )
+    db.add(threat_record)
+    db.commit()
+    db.refresh(threat_record)
+
+    out = threat_record.to_dict()
+    out["executive_evaluation"] = eval_result
+    return out
+

@@ -13,6 +13,7 @@ import UrlMonitoring from './pages/UrlMonitoring';
 import ThreatDetails from './pages/ThreatDetails';
 import Campaigns from './pages/Campaigns';
 import Reports from './pages/Reports';
+import Intelligence from './pages/Intelligence';
 
 import { PageTransition } from './components/animations';
 
@@ -58,6 +59,7 @@ export default function App() {
                 <Route path="/threats/:id" element={<ThreatDetails />} />
                 <Route path="/campaigns" element={<Campaigns />} />
                 <Route path="/reports" element={<Reports />} />
+                <Route path="/intelligence" element={<Intelligence />} />
                 <Route path="*" element={<Dashboard />} />
               </Routes>
             </PageTransition>

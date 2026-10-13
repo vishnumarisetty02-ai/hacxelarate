@@ -14,7 +14,9 @@ import {
   CheckCircle,
   FileText,
   Check,
-  Sparkles
+  Sparkles,
+  Copy,
+  Download
 } from 'lucide-react';
 import RiskBadge from '../components/RiskBadge';
 import RiskScore from '../components/RiskScore';
@@ -39,6 +41,12 @@ export default function ThreatDetails() {
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [feedbackReason, setFeedbackReason] = useState('Authorized internal staging or verified subsidiary handle');
   const [feedbackResult, setFeedbackResult] = useState(null);
+
+  // ADVANCED FEATURE: RFC 2142 & DMCA Legal Dossier State
+  const [isDossierModalOpen, setIsDossierModalOpen] = useState(false);
+  const [dossierData, setDossierData] = useState(null);
+  const [dossierLoading, setDossierLoading] = useState(false);
+  const [copiedDossier, setCopiedDossier] = useState(false);
 
   useEffect(() => {
     async function fetchDetails() {
@@ -97,6 +105,38 @@ export default function ThreatDetails() {
       console.error(err);
       setErrorMessage(err.message || 'Feedback submission failed.');
     }
+  };
+
+  const handleOpenDossier = async () => {
+    if (!threat) return;
+    setIsDossierModalOpen(true);
+    setDossierLoading(true);
+    try {
+      const res = await threatService.getTakedownDossier(threat.id, takedownNotes);
+      setDossierData(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDossierLoading(false);
+    }
+  };
+
+  const handleDownloadDossier = () => {
+    if (!dossierData?.dossier_text) return;
+    const blob = new Blob([dossierData.dossier_text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `AegisGuard_Takedown_Dossier_${threat?.id || 'LEGAL'}.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleCopyDossier = () => {
+    if (!dossierData?.dossier_text) return;
+    navigator.clipboard.writeText(dossierData.dossier_text);
+    setCopiedDossier(true);
+    setTimeout(() => setCopiedDossier(false), 3000);
   };
 
   if (loading) {
@@ -228,6 +268,14 @@ export default function ThreatDetails() {
                 Trigger Takedown
               </button>
             )}
+
+            <button
+              onClick={handleOpenDossier}
+              className="clay-button px-4 py-2 text-xs font-bold text-slate-700 hover:text-purple-700 flex items-center justify-center gap-1.5 border border-purple-200 bg-purple-50/60"
+            >
+              <FileText className="w-3.5 h-3.5 text-purple-600" />
+              <span>Legal Takedown Dossier</span>
+            </button>
 
             <button
               onClick={() => setIsFeedbackModalOpen(true)}
@@ -369,6 +417,74 @@ export default function ThreatDetails() {
           </div>
         </div>
       )}
+
+      {/* ADVANCED FEATURE: RFC 2142 & DMCA Legal Dossier Modal */}
+      {isDossierModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 animate-overlay">
+          <div className="clay-card w-full max-w-2xl p-6 space-y-4 animate-modal-up shadow-2xl max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-purple-600" />
+                <h3 className="text-base font-bold text-slate-800">
+                  RFC 2142 & DMCA Formal Takedown Dossier
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsDossierModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center text-sm font-bold"
+              >
+                &times;
+              </button>
+            </div>
+
+            {dossierLoading ? (
+              <div className="py-12 flex justify-center">
+                <LoadingSpinner text="Generating Cryptographically Attested Dossier..." />
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between text-xs bg-purple-50/70 p-3 rounded-xl border border-purple-100">
+                  <div>
+                    <span className="font-bold text-purple-950">Target Abuse Mailbox: </span>
+                    <span className="font-mono text-purple-700 font-semibold">{dossierData?.abuse_email}</span>
+                  </div>
+                  <div>
+                    <span className="font-bold text-purple-950">Case Ref: </span>
+                    <span className="font-mono text-slate-600">{dossierData?.case_reference}</span>
+                  </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto rounded-xl border border-slate-200 bg-slate-900 text-slate-100 p-4 font-mono text-[11px] leading-relaxed shadow-inner select-all">
+                  <pre className="whitespace-pre-wrap">{dossierData?.dossier_text}</pre>
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-xs text-slate-500">
+                    Compliant with ICANN RAA & 17 U.S.C. § 512
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleCopyDossier}
+                      className="clay-button px-3.5 py-2 text-xs font-bold text-slate-700 flex items-center gap-1.5"
+                    >
+                      {copiedDossier ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                      <span>{copiedDossier ? 'Copied!' : 'Copy Packet'}</span>
+                    </button>
+                    <button
+                      onClick={handleDownloadDossier}
+                      className="clay-button-primary px-4 py-2 text-xs font-bold flex items-center gap-1.5"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Download Legal Notice (.txt)</span>
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
