@@ -16,7 +16,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Environment(str, Enum):
     DEVELOPMENT = "development"
     STAGING = "staging"
-    PRODUCTION = "production"
+    PRODUCTION = "production" 
     TEST = "test"
 
 
