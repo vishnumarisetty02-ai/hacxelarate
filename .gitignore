@@ -55,3 +55,10 @@ logs/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Secrets
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env

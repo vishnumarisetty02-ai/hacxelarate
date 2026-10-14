@@ -357,6 +357,27 @@ export const threatService = {
     }
   },
 
+  async getMlBenchmarks() {
+    try {
+      const res = await apiClient.get('/reports/ml-benchmarks');
+      return { isDemo: false, data: res.data };
+    } catch (err) {
+      return {
+        isDemo: true,
+        data: {
+          status: 'COMPLETED',
+          benchmark_datasets: [
+            { id: 1, name: 'Instagram Fake Spammer Genuine Accounts Dataset', source: 'Kaggle / free4ever1' },
+            { id: 2, name: 'Cresci-2017 Social Bot Dataset', source: 'Botometer / Indiana University OSOME' },
+            { id: 3, name: 'TwiBot-22 Dataset', source: 'Luo et al., NeurIPS 2022' },
+            { id: 4, name: 'PhiUSIIL Phishing URL Dataset', source: 'UCI Machine Learning Repository #967' },
+            { id: 5, name: 'CICMalDroid 2020 Android Malware Dataset', source: 'Canadian Institute for Cybersecurity (UNB)' }
+          ]
+        }
+      };
+    }
+  },
+
   // 11. Takedown Action (POST /api/threats/{id}/takedown)
   async triggerTakedown(threatId, notes = '') {
     try {

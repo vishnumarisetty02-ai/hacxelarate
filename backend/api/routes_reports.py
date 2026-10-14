@@ -7,7 +7,29 @@ from models.database import get_db
 from models.entities import ReportModel, ThreatModel
 from models.schemas import ReportGenerateRequest, ReportResponse
 
+import os
+import json
+
 router = APIRouter(prefix="/reports", tags=["Audit Reports"])
+
+@router.get("/ml-benchmarks")
+def get_ml_benchmarks():
+    """Retrieve verified ML training benchmarks for the Top 5 Cybersecurity Datasets."""
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    report_path = os.path.join(base_dir, "ml", "saved_models", "benchmark_training_report.json")
+    if os.path.exists(report_path):
+        with open(report_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {
+        "status": "READY",
+        "datasets": [
+            "Instagram Fake Spammer Genuine Accounts Dataset",
+            "Cresci-2017 Social Bot Dataset",
+            "TwiBot-22 Dataset",
+            "PhiUSIIL Phishing URL Dataset",
+            "CICMalDroid 2020 Android Malware Dataset"
+        ]
+    }
 
 @router.get("")
 def list_reports(db: Session = Depends(get_db)):

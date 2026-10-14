@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
+import VoiceAssistantModal from './components/VoiceAssistantModal';
+import FloatingVoiceTrigger from './components/FloatingVoiceTrigger';
 
 // Pages
 import Login from './pages/Login';
@@ -19,7 +21,16 @@ import { PageTransition } from './components/animations';
 
 export default function App() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    const handleVoiceToggle = () => {
+      setIsVoiceModalOpen(prev => !prev);
+    };
+    window.addEventListener('toggle-aegis-voice', handleVoiceToggle);
+    return () => window.removeEventListener('toggle-aegis-voice', handleVoiceToggle);
+  }, []);
 
   const isLoginPage = location.pathname === '/login';
 
@@ -45,6 +56,7 @@ export default function App() {
         <Navbar
           isMobileOpen={isMobileSidebarOpen}
           onToggleSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+          onOpenVoice={() => setIsVoiceModalOpen(true)}
         />
 
         <main className="flex-1 p-4 lg:p-8">
@@ -66,6 +78,15 @@ export default function App() {
           </div>
         </main>
       </div>
+
+      {/* Floating Voice Assistant Trigger (bottom right) */}
+      <FloatingVoiceTrigger onOpen={() => setIsVoiceModalOpen(true)} />
+
+      {/* Voice Assistant HUD Modal */}
+      <VoiceAssistantModal
+        isOpen={isVoiceModalOpen}
+        onClose={() => setIsVoiceModalOpen(false)}
+      />
     </div>
   );
 }

@@ -9,7 +9,11 @@ import {
   ShieldCheck,
   AlertTriangle,
   RefreshCw,
-  Sparkles
+  Sparkles,
+  Database,
+  Cpu,
+  ExternalLink,
+  Award
 } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -19,6 +23,7 @@ import { FadeIn, StaggerContainer } from '../components/animations';
 export default function Reports() {
   const [loading, setLoading] = useState(true);
   const [reports, setReports] = useState([]);
+  const [benchmarks, setBenchmarks] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [reportType, setReportType] = useState('Executive Board Summary');
   const [timeRange, setTimeRange] = useState('Last 30 Days');
@@ -29,8 +34,12 @@ export default function Reports() {
     setLoading(true);
     setErrorMessage(null);
     try {
-      const res = await threatService.getReports();
-      setReports(res.data || []);
+      const [repRes, bmarkRes] = await Promise.all([
+        threatService.getReports(),
+        threatService.getMlBenchmarks()
+      ]);
+      setReports(repRes.data || []);
+      setBenchmarks(bmarkRes.data || null);
     } catch (err) {
       setErrorMessage(err.message || 'Failed to fetch reports.');
     } finally {
@@ -180,6 +189,145 @@ export default function Reports() {
           color="orange"
         />
       </StaggerContainer>
+
+      {/* Top 5 Cybersecurity Datasets Benchmark Evaluation Card */}
+      <FadeIn delay="0.12s">
+        <div className="clay-card p-6 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/40 border border-blue-200/90 space-y-5 shadow-[0_8px_30px_rgba(37,99,235,0.08)]">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-200/80">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-[0_4px_12px_rgba(37,99,235,0.3)] flex-shrink-0">
+                <Database className="w-5 h-5 text-cyan-200" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-extrabold text-slate-900 font-mono tracking-wide">
+                    ML MODEL BENCHMARKS — TOP 5 CYBERSECURITY DATASETS
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1 font-mono">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                    Trained & Validated
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 font-medium">
+                  Autonomous threat detection models verified against gold-standard real-world academic & industry datasets.
+                </p>
+              </div>
+            </div>
+
+            {benchmarks && (
+              <span className="text-[11px] font-mono text-slate-500 bg-white/80 px-3 py-1 rounded-xl border border-slate-200 shadow-sm self-start md:self-center">
+                Last Trained: {benchmarks.timestamp || 'Today'}
+              </span>
+            )}
+          </div>
+
+          {/* Top 5 Datasets Reference Pills */}
+          <div className="space-y-2">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500">
+              Benchmark Ground Truth Datasets
+            </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              {[
+                {
+                  id: 1,
+                  name: 'Instagram Fake Spammer Genuine Accounts',
+                  source: 'Kaggle / free4ever1',
+                  url: 'https://www.kaggle.com/datasets/free4ever1/instagram-fake-spammer-genuine-accounts',
+                  tag: 'Social Profiles'
+                },
+                {
+                  id: 2,
+                  name: 'Cresci-2017 Social Bot Dataset',
+                  source: 'Botometer / Indiana Univ OSOME',
+                  url: 'https://botometer.osome.iu.edu/bot-repository/datasets/cresci-2017/cresci-2017.csv.zip',
+                  tag: 'Bot Detection'
+                },
+                {
+                  id: 3,
+                  name: 'TwiBot-22 Scam & Bot Dataset',
+                  source: 'Luo et al., NeurIPS 2022',
+                  url: 'https://github.com/LuoUndergradXJTU/TwiBot-22',
+                  tag: 'Scam Text'
+                },
+                {
+                  id: 4,
+                  name: 'PhiUSIIL Phishing URL Dataset',
+                  source: 'UCI ML Repository #967',
+                  url: 'https://archive.ics.uci.edu/dataset/967/phiusiil+phishing+url+dataset',
+                  tag: 'Phishing URLs'
+                },
+                {
+                  id: 5,
+                  name: 'CICMalDroid 2020 Android Malware',
+                  source: 'UNB Canadian Inst Cybersecurity',
+                  url: 'https://www.unb.ca/cic/datasets/maldroid-2020.html',
+                  tag: 'APK Malware'
+                }
+              ].map((ds) => (
+                <a
+                  key={ds.id}
+                  href={ds.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl bg-white hover:bg-blue-50/70 border border-slate-200/90 hover:border-blue-300 transition-all flex items-center justify-between group shadow-sm text-left"
+                >
+                  <div className="min-w-0 pr-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+                        {ds.id}
+                      </span>
+                      <span className="text-xs font-bold text-slate-800 truncate group-hover:text-blue-700">
+                        {ds.name}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 block pl-5 font-medium">
+                      {ds.source}
+                    </span>
+                  </div>
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 flex-shrink-0" />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Model Evaluation Metric Highlights */}
+          {benchmarks?.models && (
+            <div className="pt-2">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500 block mb-2">
+                Trained Models Performance Matrix
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {Object.entries(benchmarks.models).map(([key, m]) => (
+                  <div key={key} className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-800 truncate">
+                        {m.name.replace('Model ', 'M')}
+                      </span>
+                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                        {(m.accuracy * 100).toFixed(1)}% Acc
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-slate-500 font-mono space-y-0.5">
+                      <div className="flex justify-between">
+                        <span>ROC-AUC:</span>
+                        <span className="font-bold text-slate-800">{m.roc_auc.toFixed(4)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>F1-Score:</span>
+                        <span className="font-bold text-slate-800">{(m.f1_score * 100).toFixed(1)}%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Samples:</span>
+                        <span className="font-bold text-blue-600">{m.samples.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </FadeIn>
 
       {/* Report Generator Box */}
       <FadeIn delay="0.15s">

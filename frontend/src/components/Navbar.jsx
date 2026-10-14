@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
-import { Shield, Bell, Search, Sparkles, User, RefreshCw, ChevronDown, CheckCircle, Menu, X, Globe } from 'lucide-react';
+import { Shield, Bell, Search, Sparkles, User, RefreshCw, ChevronDown, CheckCircle, Menu, X, Globe, Mic } from 'lucide-react';
 import { MOCK_BRANDS } from '../services/mockData';
+import { voiceService, SUPPORTED_LANGUAGES } from '../services/voiceService';
 
-export default function Navbar({ onToggleSidebar, isMobileOpen }) {
+export default function Navbar({ onToggleSidebar, isMobileOpen, onOpenVoice }) {
   const [selectedBrand, setSelectedBrand] = useState(MOCK_BRANDS[0] || { id: 'brand-apex', name: 'ApexPay Global' });
   const [showNotifications, setShowNotifications] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [scanMessage, setScanMessage] = useState(null);
+  const [currentLang, setCurrentLang] = useState(voiceService.getLanguage());
+
+  const handleLanguageChange = (code) => {
+    setCurrentLang(code);
+    voiceService.setLanguage(code);
+    window.dispatchEvent(new Event('storage'));
+  };
 
   const handleTriggerScan = () => {
     setIsScanning(true);
@@ -18,8 +26,16 @@ export default function Navbar({ onToggleSidebar, isMobileOpen }) {
     }, 1800);
   };
 
+  const handleOpenVoice = () => {
+    if (onOpenVoice) {
+      onOpenVoice();
+    } else {
+      window.dispatchEvent(new CustomEvent('toggle-aegis-voice'));
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-30 h-16 bg-white/85 backdrop-blur-md border-b border-slate-200/80 px-4 lg:px-6 flex items-center justify-between shadow-sm animate-slide-down">
+    <header className="sticky top-0 z-30 h-16 bg-white/90 backdrop-blur-md border-b border-slate-200/90 px-4 lg:px-6 flex items-center justify-between shadow-[0_2px_15px_rgba(180,195,220,0.15)] animate-slide-down">
       {/* Left: Mobile Toggle & Brand Indicator */}
       <div className="flex items-center gap-3">
         {/* Mobile menu button */}
@@ -31,7 +47,7 @@ export default function Navbar({ onToggleSidebar, isMobileOpen }) {
           {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        {/* Brand Selector Dropdown (Clean White Clay Pill) */}
+        {/* Brand Selector Dropdown */}
         <div className="flex items-center gap-2">
           <span className="hidden sm:inline-block text-xs font-semibold text-slate-500">
             Target Entity:
@@ -55,15 +71,46 @@ export default function Navbar({ onToggleSidebar, isMobileOpen }) {
           </div>
         </div>
 
-        {/* Live Sentinel status badge (with subtle pulsing green dot) */}
-        <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-mono font-semibold shadow-inner">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 pulse-dot" />
-          <span>ACTIVE MONITORING</span>
+        {/* Gemini AI Status Badge */}
+        <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50/80 border border-blue-200 text-blue-700 text-[11px] font-mono font-semibold shadow-inner">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+          <span>GEMINI AI SENTINEL</span>
         </div>
       </div>
 
-      {/* Right: Actions, Notifications & Profile */}
-      <div className="flex items-center gap-3">
+      {/* Right: Voice AI, Language, Scan, Notifications & Profile */}
+      <div className="flex items-center gap-2.5">
+
+        {/* Language Switcher Pill */}
+        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-50 border border-slate-200 shadow-sm">
+          <Globe className="w-3.5 h-3.5 text-slate-500" />
+          <select
+            value={currentLang}
+            onChange={(e) => handleLanguageChange(e.target.value)}
+            className="text-xs font-bold bg-transparent text-slate-700 focus:outline-none cursor-pointer pr-1"
+          >
+            {SUPPORTED_LANGUAGES.map((l) => (
+              <option key={l.code} value={l.code}>
+                {l.flag} {l.native}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Voice AI Assistant Button */}
+        <button
+          onClick={handleOpenVoice}
+          title="Open Aegis Voice AI Assistant (Press 'V')"
+          className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-[0_4px_12px_rgba(37,99,235,0.35)] hover:scale-105 active:scale-95 transition-all cursor-pointer relative"
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-300"></span>
+          </span>
+          <Mic className="w-3.5 h-3.5" />
+          <span className="hidden md:inline">Voice AI</span>
+        </button>
+
         {/* Scan Button */}
         <button
           onClick={handleTriggerScan}
@@ -120,7 +167,7 @@ export default function Navbar({ onToggleSidebar, isMobileOpen }) {
 
       {/* Floating Scan Toast */}
       {scanMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-white border border-blue-200 shadow-[6px_8px_24px_rgba(180,195,220,0.45)] px-4 py-3 rounded-2xl flex items-center gap-2 text-xs font-mono text-slate-800 animate-slide-up">
+        <div className="fixed bottom-6 left-6 z-50 bg-white border border-blue-200 shadow-[6px_8px_24px_rgba(180,195,220,0.45)] px-4 py-3 rounded-2xl flex items-center gap-2 text-xs font-mono text-slate-800 animate-slide-up">
           <CheckCircle className="w-4 h-4 text-emerald-600" />
           <span>{scanMessage}</span>
         </div>

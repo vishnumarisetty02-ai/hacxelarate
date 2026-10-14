@@ -29,6 +29,7 @@ from api.routes_dashboard import router as dashboard_router
 from api.routes_reports import router as reports_router
 from api.routes_intelligence import router as intelligence_router
 from api.routes_phishing import router as phishing_router
+from api.routes_voice import router as voice_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -122,6 +123,7 @@ app.include_router(dashboard_router, prefix="/api")
 app.include_router(reports_router, prefix="/api")
 app.include_router(intelligence_router, prefix="/api")
 app.include_router(phishing_router, prefix="/api")
+app.include_router(voice_router, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn

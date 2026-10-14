@@ -449,7 +449,7 @@ export default function Intelligence() {
           return (
             <button key={t.id} onClick={() => setTab(t.id)}
               style={{
-                padding: '8px 16px', borderRadius: 8, border: 'none', cursor: 'pointer',
+                padding: '8px 16px', borderRadius: 8, cursor: 'pointer',
                 background: tab === t.id ? 'linear-gradient(135deg, #1e40af, #6d28d9)' : 'white',
                 color: tab === t.id ? 'white' : '#374151',
                 fontWeight: 600, fontSize: 12, display: 'flex', alignItems: 'center', gap: 6,

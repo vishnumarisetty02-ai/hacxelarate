@@ -13,8 +13,11 @@ import {
   ShieldCheck,
   ChevronRight,
   TrendingUp,
-  Zap
+  Zap,
+  Mic,
+  Globe2
 } from 'lucide-react';
+import { voiceService, SUPPORTED_LANGUAGES } from '../services/voiceService';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -199,6 +202,42 @@ export default function Dashboard() {
           >
             <RefreshCw className="w-3.5 h-3.5 text-blue-600" />
             Refresh
+          </button>
+        </div>
+      </div>
+
+      {/* Multilingual Voice Command Hub Banner (Google Gemini Powered) */}
+      <div className="clay-card p-4 bg-gradient-to-r from-blue-50/90 via-indigo-50/80 to-cyan-50/90 border border-blue-200/80 anim-content flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-[0_4px_20px_rgba(37,99,235,0.08)]">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 text-white flex items-center justify-center shadow-[0_4px_12px_rgba(37,99,235,0.3)] flex-shrink-0">
+            <Mic className="w-5 h-5 animate-pulse" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black tracking-wider text-slate-800 font-mono">
+                VOICE SENTINEL
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1 font-mono">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                Google Gemini AI Active
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-600 font-medium">
+              Control the platform in any language: Telugu (తెలుగు), Hindi (हिंदी), English, Tamil (தமிழ்), & 15+ more.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('toggle-aegis-voice'))}
+            className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-2 shadow-[0_4px_12px_rgba(37,99,235,0.3)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          >
+            <Mic className="w-3.5 h-3.5" />
+            <span>Speak Voice Command</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/80 text-blue-100 font-mono">
+              'V'
+            </span>
           </button>
         </div>
       </div>

@@ -12,7 +12,8 @@ import {
   ShieldAlert,
   Sliders,
   Sparkles,
-  Cpu
+  Cpu,
+  Mic
 } from 'lucide-react';
 
 export default function Sidebar({ isMobileOpen, onCloseMobile }) {
@@ -147,6 +148,35 @@ export default function Sidebar({ isMobileOpen, onCloseMobile }) {
 
         {/* Bottom Section */}
         <div className="p-4 border-t border-slate-100 space-y-3">
+          {/* Voice AI Assistant Card */}
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('toggle-aegis-voice'))}
+            className="w-full text-left p-3 rounded-2xl bg-gradient-to-br from-blue-50/90 to-indigo-50/90 border border-blue-200/80 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 group cursor-pointer"
+          >
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] font-mono font-bold text-blue-700 uppercase tracking-wider flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-ping" />
+                Gemini Voice AI
+              </span>
+              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-blue-200/60 text-blue-800 font-bold">
+                Press 'V'
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                <Mic className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <span className="text-xs font-bold text-slate-800 block leading-tight">
+                  Voice Commands
+                </span>
+                <span className="text-[10px] text-slate-500 block font-medium">
+                  All Languages (తెలుగు, हिंदी, EN...)
+                </span>
+              </div>
+            </div>
+          </button>
+
           {/* Status Indicator */}
           <div className="clay-card-inset p-3 space-y-1.5">
             <div className="flex items-center justify-between font-mono text-[11px]">
